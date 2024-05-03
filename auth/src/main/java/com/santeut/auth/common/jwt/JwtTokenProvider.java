@@ -29,7 +29,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
 
-    @Value("${jwt.secretKey")
+    @Value("${jwt.secretKey}")
     private String jwtSecretKey;
 
     @Value("${jwt.accessToken}")
