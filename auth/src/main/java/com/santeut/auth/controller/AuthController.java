@@ -29,7 +29,7 @@ public class AuthController {
 
         log.debug("회원가입 : "+ dto.getUserLoginId());
         authService.signUp(dto);
-        return new BasicResponse(HttpStatus.OK.value(), null);
+        return new BasicResponse(HttpStatus.OK.value(), "회원가입 성공");
 
     }
 

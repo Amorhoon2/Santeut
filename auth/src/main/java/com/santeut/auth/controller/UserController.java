@@ -6,6 +6,7 @@ import com.santeut.auth.dto.request.UpdateProfileImageRequest;
 import com.santeut.auth.dto.request.UpdateProfileRequest;
 import com.santeut.auth.service.UserService;
 import jakarta.persistence.Basic;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,17 +25,16 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/login/info")
-    public BasicResponse userLoginInfo(@AuthenticationPrincipal UserDetails userDetails){
+    public BasicResponse userLoginInfo(HttpServletRequest request){
 
-        log.debug("UserLoginId: "+ userDetails.getUsername());
-        return new BasicResponse(HttpStatus.OK.value(), userService.userLoginInfo(userDetails.getUsername()));
+        log.debug("UserLoginId: "+ request.getHeader("userLoginId"));
+        return new BasicResponse(HttpStatus.OK.value(), userService.userLoginInfo(request.getHeader("userLoginId")));
     }
 
     @GetMapping("/{userId}")
     public BasicResponse userInfo(@PathVariable int userId){
 
         log.debug("userId: "+ userId);
-        // status, Data
         return new BasicResponse(HttpStatus.OK.value(), userService.userInfo(userId));
     }
 
@@ -44,7 +44,7 @@ public class UserController {
 
         log.debug("Password 수정하는 유저 ID: "+ userDetails.getUsername());
         userService.updatePassword(userDetails.getUsername(), request);
-        return new BasicResponse(HttpStatus.OK.value(), null);
+        return new BasicResponse(HttpStatus.OK.value(), "패스워드 수정 성공");
     }
 
     @PatchMapping("/profile")
@@ -53,7 +53,7 @@ public class UserController {
 
         log.debug("Profile 수정하는 유저 ID: "+ userDetails.getUsername());
         userService.updateProfile(userDetails.getUsername(), request);
-        return new BasicResponse(HttpStatus.OK.value(), null);
+        return new BasicResponse(HttpStatus.OK.value(), "프로필 수정 성공");
     }
 
     @PostMapping("/profile/image")
@@ -62,7 +62,7 @@ public class UserController {
 
         log.debug("Image 수정하는 유저 ID: "+ userDetails.getUsername());
         userService.updateProfileImage(userDetails.getUsername(), multipartFile);
-        return new BasicResponse(HttpStatus.OK.value(), null);
+        return new BasicResponse(HttpStatus.OK.value(), "프로필 이미지 수정 성공");
     }
 
     @GetMapping("/level")
