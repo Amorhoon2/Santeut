@@ -14,5 +14,5 @@ public class SignUpRequestDto {
     private String userLoginId;
     private String userPassword;
     private String userBirth;
-    private String userGender;
+    private char userGender;
 }

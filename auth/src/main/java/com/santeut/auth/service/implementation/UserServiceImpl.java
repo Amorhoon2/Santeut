@@ -3,6 +3,7 @@ package com.santeut.auth.service.implementation;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.santeut.auth.common.exception.DataNotFoundException;
 import com.santeut.auth.common.response.ResponseCode;
+import com.santeut.auth.dto.request.HikingRecordRequest;
 import com.santeut.auth.dto.request.UpdatePasswordRequest;
 import com.santeut.auth.dto.request.UpdateProfileImageRequest;
 import com.santeut.auth.dto.request.UpdateProfileRequest;
@@ -84,7 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateProfileImage(String userLoginId, MultipartFile multipartFile) {
+    public void updateProfileImage(String userLoginId, MultipartFile multipartFile) {
 
         UserEntity userEntity = userRepository.findByUserLoginId(userLoginId)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
@@ -96,7 +97,6 @@ public class UserServiceImpl implements UserService {
         userEntity.setUserProfile(imageUrl);
 
         userRepository.save(userEntity);
-        return  imageUrl;
     }
 
     @Override
@@ -120,6 +120,22 @@ public class UserServiceImpl implements UserService {
 
         return new GetMountainRecordResponse(userEntity.getUserDistance(), userEntity.getUserMoveTime(),
                 userEntity.getUserHikingCount(), userEntity.getUserHikingMountain());
+    }
+
+    @Override
+    public void patchMountainRecord(HikingRecordRequest request) {
+
+        UserEntity userEntity = userRepository.findByUserId(request.getUserId())
+                .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
+
+
+        userEntity.setUserHikingCount(userEntity.getUserHikingCount()+1);
+        userEntity.setUserDistance(userEntity.getUserDistance()+request.getDistance());
+        userEntity.setUserMoveTime(userEntity.getUserMoveTime()+request.getMoveTime());
+        log.debug("첫 등반 산: "+ request.getIsFirstMountain());
+        if (request.getIsFirstMountain()) userEntity.setUserHikingMountain(userEntity.getUserHikingMountain()+1);
+
+        userRepository.save(userEntity);
     }
 
 }
