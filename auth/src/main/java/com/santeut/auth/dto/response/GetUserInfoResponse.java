@@ -22,7 +22,7 @@ public class GetUserInfoResponse {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private String userBirth;
-    private String userGender;
+    private char userGender;
     private LocalDateTime deletedAt;
     private Boolean isDeleted;
     private String userProfile;

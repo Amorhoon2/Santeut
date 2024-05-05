@@ -1,6 +1,7 @@
 package com.santeut.auth.service;
 
 
+import com.santeut.auth.dto.request.HikingRecordRequest;
 import com.santeut.auth.dto.request.UpdatePasswordRequest;
 import com.santeut.auth.dto.request.UpdateProfileImageRequest;
 import com.santeut.auth.dto.request.UpdateProfileRequest;
@@ -21,9 +22,11 @@ public interface UserService {
     void updatePassword(String userLoginId, UpdatePasswordRequest request);
 
     void updateProfile(String userLoginId, UpdateProfileRequest request);
-    String updateProfileImage(String userLoginId, MultipartFile multipartFile);
+    void updateProfileImage(String userLoginId, MultipartFile multipartFile);
 
     GetUserLevelResponse getLevel(String userLoginId);
 
     GetMountainRecordResponse getMountainRecord(String userLoginId);
+
+    void patchMountainRecord(HikingRecordRequest request);
 }

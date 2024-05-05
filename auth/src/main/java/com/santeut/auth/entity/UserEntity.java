@@ -47,7 +47,7 @@ public class UserEntity {
     private String userBirth;
 
     @NotNull
-    private String userGender;
+    private char userGender;
 
     @Column(columnDefinition = "DATETIME")
     private LocalDateTime deletedAt;

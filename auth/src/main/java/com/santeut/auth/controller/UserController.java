@@ -1,6 +1,7 @@
 package com.santeut.auth.controller;
 
 import com.santeut.auth.common.response.BasicResponse;
+import com.santeut.auth.dto.request.HikingRecordRequest;
 import com.santeut.auth.dto.request.UpdatePasswordRequest;
 import com.santeut.auth.dto.request.UpdateProfileImageRequest;
 import com.santeut.auth.dto.request.UpdateProfileRequest;
@@ -79,6 +80,12 @@ public class UserController {
         return new BasicResponse(HttpStatus.OK.value(), userService.getMountainRecord(userDetails.getUsername()));
     }
 
-//    @PatchMapping("/record")
-//    private BasicResponse patchRecord(@RequestBody HikingRecordRequest request)
+    @PatchMapping("/record")
+    private BasicResponse patchRecord(@RequestBody HikingRecordRequest request){
+        
+        log.debug("등산 기록 갱신");
+        log.debug("첫 등반 산 여부: "+ request.getIsFirstMountain());
+        userService.patchMountainRecord(request);
+        return new BasicResponse(HttpStatus.OK.value(), "등산 기록 갱신 완료");
+    }
 }
