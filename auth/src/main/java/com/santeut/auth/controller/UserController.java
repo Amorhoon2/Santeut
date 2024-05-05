@@ -78,4 +78,7 @@ public class UserController {
         log.debug("등산 기록 조회 ID: "+ userDetails.getUsername());
         return new BasicResponse(HttpStatus.OK.value(), userService.getMountainRecord(userDetails.getUsername()));
     }
+
+//    @PatchMapping("/record")
+//    private BasicResponse patchRecord(@RequestBody HikingRecordRequest request)
 }
