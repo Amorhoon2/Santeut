@@ -34,9 +34,9 @@ public class UserServiceImpl implements UserService {
     private final ImageUtil imageUtil;
 
     @Override
-    public GetUserInfoResponse userLoginInfo(String userLoginId) {
+    public GetUserInfoResponse userLoginInfo(String userId) {
 
-        UserEntity userEntity = userRepository.findByUserLoginId(userLoginId)
+        UserEntity userEntity = userRepository.findByUserId(Integer.parseInt(userId))
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
         return new GetUserInfoResponse(userEntity);

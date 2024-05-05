@@ -1,6 +1,10 @@
 package com.santeut.auth.common.jwt;
 
+import com.santeut.auth.common.exception.DataNotFoundException;
+import com.santeut.auth.common.response.ResponseCode;
 import com.santeut.auth.common.userDetail.CustomUserDetailsService;
+import com.santeut.auth.entity.UserEntity;
+import com.santeut.auth.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
+    private final UserRepository userRepository;
 
     // HTTP 요청 시 사용자의 토큰을 꺼내서 유효한 토큰인지 검증하는 필터
     @Override
@@ -38,11 +43,14 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String userLoginId = jwtTokenProvider.extractUserLoginId(token);
+        String userId = jwtTokenProvider.extractUserId(token);
 // && SecurityContextHolder.getContext().getAuthentication() == null
-        if(userLoginId != null){
+        if(userId != null){
 
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userLoginId);
+            UserEntity userEntity = userRepository.findByUserId(Integer.parseInt(userId))
+                    .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
+
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEntity.getUserLoginId());
             log.trace("userDetails: "+ userDetails.getUsername());
 
             log.trace("ValidateToken: "+jwtTokenProvider.validateToken(token, userDetails));

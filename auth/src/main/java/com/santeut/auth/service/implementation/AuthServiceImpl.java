@@ -62,6 +62,8 @@ public class AuthServiceImpl implements AuthService {
         UserEntity userEntity = userRepository.findByUserLoginId(userLoginId)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
+        int userId = userEntity.getUserId();
+
         if(!userLoginId.equals(userEntity.getUserLoginId())){
             throw new DataNotFoundException(ResponseCode.NOT_MATCH_USER_LOGIN_ID);
         }
@@ -69,15 +71,14 @@ public class AuthServiceImpl implements AuthService {
             throw new DataNotFoundException(ResponseCode.NOT_MATCH_USER_PASSWORD);
         }
 
-        JwtTokenResponseDto jwtTokenResponse = jwtTokenProvider.issueToken(
-                userLoginId);
+        JwtTokenResponseDto jwtTokenResponse = jwtTokenProvider.issueToken(userId);
 
 
-        if(refreshTokenRepository.existsByUserLoginId(userLoginId)){
-            refreshTokenRepository.deleteByUserLoginId(userLoginId);
+        if(refreshTokenRepository.existsByUserId(String.valueOf(userId))){
+            refreshTokenRepository.deleteByUserId(String.valueOf(userId));
         }
 
-        refreshTokenRepository.save(new RefreshToken(userLoginId, jwtTokenResponse.getRefreshToken()));
+        refreshTokenRepository.save(new RefreshToken(String.valueOf(userId), jwtTokenResponse.getRefreshToken()));
 
         return jwtTokenResponse;
     }
@@ -87,10 +88,10 @@ public class AuthServiceImpl implements AuthService {
 
         JwtTokenResponseDto jwtTokenResponseDto = jwtTokenProvider.reissueToken(request);
 
-        String userLoginId = jwtTokenProvider.extractUserLoginId(jwtTokenResponseDto.getRefreshToken());
+        String userLoginId = jwtTokenProvider.extractUserId(jwtTokenResponseDto.getRefreshToken());
 
-        if(refreshTokenRepository.existsByUserLoginId(userLoginId)){
-            refreshTokenRepository.deleteByUserLoginId(userLoginId);
+        if(refreshTokenRepository.existsByUserId(userLoginId)){
+            refreshTokenRepository.deleteByUserId(userLoginId);
         }
 
         refreshTokenRepository.save(new RefreshToken(userLoginId,jwtTokenResponseDto.getRefreshToken()));

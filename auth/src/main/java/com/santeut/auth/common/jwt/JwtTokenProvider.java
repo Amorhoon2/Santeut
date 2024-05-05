@@ -3,8 +3,10 @@ package com.santeut.auth.common.jwt;
 import com.santeut.auth.common.exception.DataNotFoundException;
 import com.santeut.auth.dto.response.JwtTokenResponseDto;
 import com.santeut.auth.entity.RefreshToken;
+import com.santeut.auth.entity.UserEntity;
 import com.santeut.auth.repository.RefreshTokenRepository;
 import com.santeut.auth.common.response.ResponseCode;
+import com.santeut.auth.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -39,19 +41,20 @@ public class JwtTokenProvider {
     private Long refreshTokenExpired;
 
     private final RefreshTokenRepository refreshTokenRepository;
-
-//    @Autowired
-//    private Environment env;
+    private final UserRepository userRepository;
 
 
     // 토큰 유효성 검증
     public boolean validateToken(String token, UserDetails userDetails){
 
-        String userLoginId = extractUserLoginId(token);
+        String userId = extractUserId(token);
 
         if (expiredToken(token)) throw new DataNotFoundException(ResponseCode.INVALID_ACCESS_TOKEN);
 
-        return userLoginId.equals(userDetails.getUsername());
+        UserEntity userEntity = userRepository.findByUserLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
+
+        return Integer.parseInt(userId) == userEntity.getUserId();
     }
 
     // 토큰 만료
@@ -78,7 +81,7 @@ public class JwtTokenProvider {
     }
 
     // 클레임 중에서 Subject 추출
-    public String extractUserLoginId(String token){
+    public String extractUserId(String token){
         return extractAllClaims(token).getSubject();
     }
 
@@ -94,10 +97,10 @@ public class JwtTokenProvider {
     }
 
     // 사용자의 아이디, 발급 시간, 만료 시간 고려해서 JWT 키 생성
-    private String generateToken(String userLoginId, Long expiredTime){
+    private String generateToken(int userId, Long expiredTime){
 
         return Jwts.builder()
-                .subject(userLoginId)
+                .subject(String.valueOf(userId))
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + expiredTime))
                 .signWith(getKey())
@@ -105,13 +108,11 @@ public class JwtTokenProvider {
     }
 
     // 키 발급
-    public JwtTokenResponseDto issueToken(String userLoginId){
+    public JwtTokenResponseDto issueToken(int userId){
 
-//        Long accessTokenExpired = Long.parseLong(env.getProperty("jwt.accessToken"));
-//        Long refreshTokenExpired = Long.parseLong(env.getProperty("jwt.refreshToken"));
 
-        String accessToken = generateToken(userLoginId, accessTokenExpired);
-        String refreshToken = generateToken(userLoginId, refreshTokenExpired);
+        String accessToken = generateToken(userId, accessTokenExpired);
+        String refreshToken = generateToken(userId, refreshTokenExpired);
 
         return new JwtTokenResponseDto("Bearer", accessToken, refreshToken);
     }
@@ -124,24 +125,25 @@ public class JwtTokenProvider {
             throw new DataNotFoundException(ResponseCode.INVALID_REFRESH_TOKEN);
         }
 
-        String userLoginId = extractUserLoginId(token);
+        String userId = extractUserId(token);
 
-        if(userLoginId == null){
+        if(userId == null){
             throw new DataNotFoundException(ResponseCode.NOT_EXISTS_USER);
         }
 
-        RefreshToken refreshToken = refreshTokenRepository.findByUserLoginId(userLoginId)
+        log.debug("userId : "+ userId);
+        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.INVALID_REFRESH_TOKEN));
 
-        String checkId = extractUserLoginId(refreshToken.getRefreshToken());
+        String checkId = extractUserId(refreshToken.getRefreshToken());
 
-        log.debug("userLoginId : "+ userLoginId +" / checkId : "+ checkId);
+        log.debug("userId : "+ userId +" / checkId : "+ checkId);
 
         // 현재 로그인한 사용자의 RefreshToken이랑 redis에 저장된 refreshToken이랑 일치하는지 비교
         if(!token.equals(refreshToken.getRefreshToken())){
             throw new DataNotFoundException(ResponseCode.NOT_MATCH_REFRESH_TOKEN);
         }
 
-        return issueToken(userLoginId);
+        return issueToken(Integer.parseInt(userId));
     }
 }
