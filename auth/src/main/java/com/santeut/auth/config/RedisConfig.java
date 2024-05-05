@@ -22,13 +22,9 @@ public class RedisConfig {
   @Value("${spring.data.redis.port}")
   private String redisPort;
 
-//    @Autowired
-//    private Environment env;
 
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
-//        String redisHost = env.getProperty("spring.data.redis.host");
-//        String redisPort = env.getProperty("spring.data.redis.port");
 
     RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
     redisStandaloneConfiguration.setHostName(redisHost);
