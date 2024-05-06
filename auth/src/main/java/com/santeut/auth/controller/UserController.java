@@ -29,7 +29,8 @@ public class UserController {
     public BasicResponse userLoginInfo(HttpServletRequest request){
 
         log.debug("UserId: "+ request.getHeader("userId"));
-        return new BasicResponse(HttpStatus.OK.value(), userService.userLoginInfo(Integer.parseInt(request.getHeader("userId"))));
+        String userId = request.getHeader("userId");
+        return new BasicResponse(HttpStatus.OK.value(), userService.userLoginInfo(userId));
     }
 
     @GetMapping("/{userId}")

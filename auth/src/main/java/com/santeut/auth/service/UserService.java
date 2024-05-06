@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
-    GetUserInfoResponse userLoginInfo(int userId);
+    GetUserInfoResponse userLoginInfo(String userId);
 
     GetUserInfoResponse userInfo(int userId);
 
