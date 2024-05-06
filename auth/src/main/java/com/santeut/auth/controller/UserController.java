@@ -84,7 +84,6 @@ public class UserController {
     private BasicResponse patchRecord(@RequestBody HikingRecordRequest request){
         
         log.debug("등산 기록 갱신");
-        log.debug("첫 등반 산 여부: "+ request.getIsFirstMountain());
         userService.patchMountainRecord(request);
         return new BasicResponse(HttpStatus.OK.value(), "등산 기록 갱신 완료");
     }
