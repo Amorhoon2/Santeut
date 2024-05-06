@@ -1,8 +1,10 @@
 package com.santeut.auth.common.exception;
 
 import com.santeut.auth.common.response.ErrorResponse;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -58,9 +60,20 @@ public class ApiExceptionController {
         return constructErrorResponse(e,HttpStatus.FORBIDDEN, "handleAccessDeniedException");
     }
 
+    @ExceptionHandler(DataNotFoundException.class)
+    public ErrorResponse CustomErrorResponse(DataNotFoundException e) {
+
+        return constructErrorResponse2(e, e.getCode());
+    }
+
 
     private ErrorResponse constructErrorResponse(Exception e, HttpStatus status, String errorType) {
         log.error("[exceptionHandle] ex={}", e.getMessage(), e);
         return new ErrorResponse(status.value(), errorType, e.getMessage());
+    }
+
+    private ErrorResponse constructErrorResponse2(Exception e, int status) {
+        log.error("[exceptionHandle] ex={}", e.getMessage(), e);
+        return new ErrorResponse(status, e.getMessage());
     }
 }

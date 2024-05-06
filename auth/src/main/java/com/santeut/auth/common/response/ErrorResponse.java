@@ -4,7 +4,12 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ErrorResponse {
-    private final int status;
-    private final String name;
-    private final String message;
+    private int status;
+    private String name;
+    private String message;
+
+    public ErrorResponse(int status, String message){
+        this.status = status;
+        this.message = message;
+    }
 }

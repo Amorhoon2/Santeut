@@ -90,7 +90,6 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByUserLoginId(userLoginId)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
-        System.out.println("Profile Image: "+multipartFile);
         log.debug("Profile Image: "+multipartFile);
 
         String imageUrl = imageUtil.saveImage(multipartFile);
@@ -132,6 +131,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setUserHikingCount(userEntity.getUserHikingCount()+1);
         userEntity.setUserDistance(userEntity.getUserDistance()+request.getDistance());
         userEntity.setUserMoveTime(userEntity.getUserMoveTime()+request.getMoveTime());
+        userEntity.setUserPoint(userEntity.getUserPoint()+50);
         log.debug("첫 등반 산: "+ request.getIsFirstMountain());
         if (request.getIsFirstMountain()) userEntity.setUserHikingMountain(userEntity.getUserHikingMountain()+1);
 
