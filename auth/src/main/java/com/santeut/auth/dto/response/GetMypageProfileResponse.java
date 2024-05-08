@@ -19,6 +19,7 @@ public class GetMypageProfileResponse {
     private int userMoveTime;
     private int userHikingCount;
     private int userHikingMountain;
+    private String userProfile;
 
     public GetMypageProfileResponse(UserEntity userEntity, int point, String userTierName){
         this.userId = userEntity.getUserId();
@@ -30,5 +31,6 @@ public class GetMypageProfileResponse {
         this.userMoveTime = userEntity.getUserMoveTime();
         this.userHikingCount = userEntity.getUserHikingCount();
         this.userHikingMountain = userEntity.getUserHikingMountain();
+        this.userProfile = userEntity.getUserProfile();
     }
 }
