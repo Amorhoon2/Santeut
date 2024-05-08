@@ -49,6 +49,9 @@ public class UserController {
         return new BasicResponse(HttpStatus.OK.value(), "패스워드 수정 성공");
     }
 
+    @GetMapping
+    public BasicResponse
+
     @PatchMapping("/profile")
     public BasicResponse updateProfile(@AuthenticationPrincipal UserDetails userDetails,
                                         @RequestBody UpdateProfileRequest request){
