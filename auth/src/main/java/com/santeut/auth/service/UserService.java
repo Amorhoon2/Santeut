@@ -6,6 +6,7 @@ import com.santeut.auth.dto.request.UpdatePasswordRequest;
 import com.santeut.auth.dto.request.UpdateProfileImageRequest;
 import com.santeut.auth.dto.request.UpdateProfileRequest;
 import com.santeut.auth.dto.response.GetMountainRecordResponse;
+import com.santeut.auth.dto.response.GetMypageProfileResponse;
 import com.santeut.auth.dto.response.GetUserInfoResponse;
 import com.santeut.auth.dto.response.GetUserLevelResponse;
 import com.santeut.auth.entity.UserEntity;
@@ -23,6 +24,7 @@ public interface UserService {
 
     void updateProfile(String userLoginId, UpdateProfileRequest request);
     void updateProfileImage(String userLoginId, MultipartFile multipartFile);
+    GetMypageProfileResponse getMypageProfile(String userLoginId);
 
     GetUserLevelResponse getLevel(String userLoginId);
 

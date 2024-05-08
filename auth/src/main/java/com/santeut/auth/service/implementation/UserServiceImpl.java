@@ -8,6 +8,7 @@ import com.santeut.auth.dto.request.UpdatePasswordRequest;
 import com.santeut.auth.dto.request.UpdateProfileImageRequest;
 import com.santeut.auth.dto.request.UpdateProfileRequest;
 import com.santeut.auth.dto.response.GetMountainRecordResponse;
+import com.santeut.auth.dto.response.GetMypageProfileResponse;
 import com.santeut.auth.dto.response.GetUserInfoResponse;
 import com.santeut.auth.dto.response.GetUserLevelResponse;
 import com.santeut.auth.entity.UserEntity;
@@ -99,16 +100,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public GetMypageProfileResponse getMypageProfile(String userLoginId) {
+
+        UserEntity userEntity = userRepository.findByUserLoginId(userLoginId)
+                .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
+        int point = userEntity.getUserPoint();
+        String tierName = levelUtil.getTierName(point);
+        return new GetMypageProfileResponse(userEntity, point, tierName);
+    }
+
+    @Override
     public GetUserLevelResponse getLevel(String userLoginId) {
 
         UserEntity userEntity = userRepository.findByUserLoginId(userLoginId)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
         int point = userEntity.getUserPoint();
-
         String tierName = levelUtil.getTierName(point);
 
-        return new GetUserLevelResponse(tierName,point);
+        return new GetUserLevelResponse(tierName, point);
     }
 
     @Override
@@ -126,7 +136,6 @@ public class UserServiceImpl implements UserService {
 
         UserEntity userEntity = userRepository.findByUserId(request.getUserId())
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
-
 
         userEntity.setUserHikingCount(userEntity.getUserHikingCount()+1);
         userEntity.setUserDistance(userEntity.getUserDistance()+request.getDistance());

@@ -50,8 +50,12 @@ public class UserController {
         return new BasicResponse(HttpStatus.OK.value(), "패스워드 수정 성공");
     }
 
-    @GetMapping
-    public BasicResponse
+    @GetMapping("/mypage/profile")
+    public BasicResponse getMypageProfile(@AuthenticationPrincipal UserDetails userDetails){
+        
+        log.debug("MyPage Profile 조회: "+ userDetails.getUsername());
+        return new BasicResponse(HttpStatus.OK.value(), userService.getMypageProfile(userDetails.getUsername()));
+    }
 
     @PatchMapping("/profile")
     public BasicResponse updateProfile(@AuthenticationPrincipal UserDetails userDetails,
