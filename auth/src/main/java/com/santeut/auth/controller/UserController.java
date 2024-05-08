@@ -75,17 +75,18 @@ public class UserController {
     }
 
     @GetMapping("/record")
-    private BasicResponse gerRecord(@AuthenticationPrincipal UserDetails userDetails){
+    public BasicResponse gerRecord(@AuthenticationPrincipal UserDetails userDetails){
 
         log.debug("등산 기록 조회 ID: "+ userDetails.getUsername());
         return new BasicResponse(HttpStatus.OK.value(), userService.getMountainRecord(userDetails.getUsername()));
     }
 
     @PatchMapping("/record")
-    private BasicResponse patchRecord(@RequestBody HikingRecordRequest request){
+    public BasicResponse patchRecord(@RequestBody HikingRecordRequest request){
         
         log.debug("등산 기록 갱신");
         userService.patchMountainRecord(request);
         return new BasicResponse(HttpStatus.OK.value(), "등산 기록 갱신 완료");
     }
+
 }
