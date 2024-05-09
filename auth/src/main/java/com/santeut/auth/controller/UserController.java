@@ -41,6 +41,13 @@ public class UserController {
         return new BasicResponse(HttpStatus.OK.value(), userService.userInfo(userId));
     }
 
+    @GetMapping("/mypage/profile")
+    public BasicResponse getMypageProfile(@AuthenticationPrincipal UserDetails userDetails){
+
+        log.debug("MyPage Profile 조회: "+ userDetails.getUsername());
+        return new BasicResponse(HttpStatus.OK.value(), userService.getMypageProfile(userDetails.getUsername()));
+    }
+
     @PutMapping("/password")
     public BasicResponse updatePassword(@AuthenticationPrincipal UserDetails userDetails,
                                         @RequestBody UpdatePasswordRequest request){
@@ -50,19 +57,13 @@ public class UserController {
         return new BasicResponse(HttpStatus.OK.value(), "패스워드 수정 성공");
     }
 
-    @GetMapping("/mypage/profile")
-    public BasicResponse getMypageProfile(@AuthenticationPrincipal UserDetails userDetails){
-        
-        log.debug("MyPage Profile 조회: "+ userDetails.getUsername());
-        return new BasicResponse(HttpStatus.OK.value(), userService.getMypageProfile(userDetails.getUsername()));
-    }
-
     @PatchMapping("/profile")
     public BasicResponse updateProfile(@AuthenticationPrincipal UserDetails userDetails,
-                                        @RequestBody UpdateProfileRequest request){
+                                       @RequestPart(value = "request", required = false) UpdateProfileRequest request,
+                                       @RequestPart(value = "userProfile", required = false) MultipartFile multipartFile){
 
         log.debug("Profile 수정하는 유저 ID: "+ userDetails.getUsername());
-        userService.updateProfile(userDetails.getUsername(), request);
+        userService.updateProfile(userDetails.getUsername(), request, multipartFile);
         return new BasicResponse(HttpStatus.OK.value(), "프로필 수정 성공");
     }
 

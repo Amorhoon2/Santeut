@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -70,19 +71,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateProfile(String userLoginId, UpdateProfileRequest request) {
+    public void updateProfile(String userLoginId, UpdateProfileRequest request, MultipartFile multipartFile) {
 
         UserEntity userEntity = userRepository.findByUserLoginId(userLoginId)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
-        boolean checkUser = userRepository.existsByUserNickname(request.getUserNickname());
-        if (checkUser) throw new DataNotFoundException(ResponseCode.EXISTS_USER_NICKNAME);
+        log.debug("userNickname: "+ request.getUserNickname());
+        if (!request.getUserNickname().equals(userEntity.getUserNickname())) {
+            boolean checkUser = userRepository.existsByUserNickname(request.getUserNickname());
+            if (checkUser) throw new DataNotFoundException(ResponseCode.EXISTS_USER_NICKNAME);
+            userEntity.setUserNickname(request.getUserNickname());
+        }
+        log.debug("currentPassword: "+ request.getCurrentPassword());
+        if (request.getUpdatePassword() != null){
+         if(!bCryptPasswordEncoder.matches(request.getCurrentPassword(), userEntity.getUserPassword())){
+            throw new DataNotFoundException(ResponseCode.NOT_MATCH_USER_PASSWORD);
+         }
+         String updatePassword = bCryptPasswordEncoder.encode(request.getUpdatePassword());
+         userEntity.setUserPassword(updatePassword);
+        }
 
-        if (request.getUserNickname() != null) userEntity.setUserNickname(request.getUserNickname());
+        if (multipartFile != null){
+            String imageUrl = imageUtil.saveImage(multipartFile);
+            userEntity.setUserProfile(imageUrl);
+        }
+        else userEntity.setUserProfile(null);
+
         userEntity.setModifiedAt(LocalDateTime.now());
-
         userRepository.save(userEntity);
-
     }
 
     @Override

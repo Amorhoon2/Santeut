@@ -7,4 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class UpdateProfileRequest {
 
     String userNickname;
+    String currentPassword;
+    String updatePassword;
 }

@@ -22,7 +22,7 @@ public interface UserService {
 
     void updatePassword(String userLoginId, UpdatePasswordRequest request);
 
-    void updateProfile(String userLoginId, UpdateProfileRequest request);
+    void updateProfile(String userLoginId, UpdateProfileRequest request, MultipartFile multipartFile);
     void updateProfileImage(String userLoginId, MultipartFile multipartFile);
     GetMypageProfileResponse getMypageProfile(String userLoginId);
 

@@ -63,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
         int userId = userEntity.getUserId();
+        String userNickname = userEntity.getUserNickname();
 
         if(!userLoginId.equals(userEntity.getUserLoginId())){
             throw new DataNotFoundException(ResponseCode.NOT_MATCH_USER_LOGIN_ID);
@@ -71,14 +72,13 @@ public class AuthServiceImpl implements AuthService {
             throw new DataNotFoundException(ResponseCode.NOT_MATCH_USER_PASSWORD);
         }
 
-        JwtTokenResponseDto jwtTokenResponse = jwtTokenProvider.issueToken(userId);
+        JwtTokenResponseDto jwtTokenResponse = jwtTokenProvider.issueToken(userId, userNickname);
 
         if(refreshTokenRepository.existsByUserId(String.valueOf(userId))){
             refreshTokenRepository.deleteByUserId(String.valueOf(userId));
         }
 
         refreshTokenRepository.save(new RefreshToken(String.valueOf(userId), jwtTokenResponse.getRefreshToken()));
-
         return new SignInResponse(jwtTokenResponse, userEntity.getUserNickname());
     }
 
