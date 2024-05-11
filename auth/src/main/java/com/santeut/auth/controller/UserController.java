@@ -1,7 +1,9 @@
 package com.santeut.auth.controller;
 
 import com.santeut.auth.common.response.BasicResponse;
+import com.santeut.auth.common.util.ResponseUtil;
 import com.santeut.auth.dto.request.HikingRecordRequest;
+import com.santeut.auth.dto.request.PartyMemberInfoRequest;
 import com.santeut.auth.dto.request.UpdatePasswordRequest;
 import com.santeut.auth.dto.request.UpdateProfileImageRequest;
 import com.santeut.auth.dto.request.UpdateProfileRequest;
@@ -86,5 +88,12 @@ public class UserController {
         log.debug("등산 기록 갱신");
         userService.patchMountainRecord(request);
         return new BasicResponse(HttpStatus.OK.value(), "등산 기록 갱신 완료");
+    }
+
+    @GetMapping("/party/profile")
+    private ResponseEntity<BasicResponse> getPartyMemberInfo(HttpServletRequest request,
+        @RequestBody PartyMemberInfoRequest requestDto) {
+        log.info("{}번 유저: {}번 파티 멤버 프로필 조회", request.getHeader("userId"), requestDto.partyId);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, userService.getPartyMemberInfo(requestDto));
     }
 }

@@ -4,10 +4,13 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.santeut.auth.common.exception.DataNotFoundException;
 import com.santeut.auth.common.response.ResponseCode;
 import com.santeut.auth.dto.request.HikingRecordRequest;
+import com.santeut.auth.dto.request.PartyMemberInfoRequest;
 import com.santeut.auth.dto.request.UpdatePasswordRequest;
 import com.santeut.auth.dto.request.UpdateProfileImageRequest;
 import com.santeut.auth.dto.request.UpdateProfileRequest;
 import com.santeut.auth.dto.response.GetMountainRecordResponse;
+import com.santeut.auth.dto.response.GetPartyMemberInfoResponse;
+import com.santeut.auth.dto.response.GetPartyMemberInfoResponse.PartyMemberInfo;
 import com.santeut.auth.dto.response.GetUserInfoResponse;
 import com.santeut.auth.dto.response.GetUserLevelResponse;
 import com.santeut.auth.entity.UserEntity;
@@ -15,6 +18,8 @@ import com.santeut.auth.repository.UserRepository;
 import com.santeut.auth.service.UserService;
 import com.santeut.auth.util.ImageUtil;
 import com.santeut.auth.util.LevelUtil;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -138,4 +143,17 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);
     }
 
+    @Override
+    public GetPartyMemberInfoResponse getPartyMemberInfo(PartyMemberInfoRequest requestDto) {
+
+        List<PartyMemberInfo> partyMemberList = new ArrayList<>();
+        for (int userId : requestDto.getUserIdList()) {
+            UserEntity userEntity = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
+            partyMemberList.add(
+                new PartyMemberInfo(userEntity.getUserId(), userEntity.getUserNickname(),
+                    userEntity.getUserProfile()));
+        }
+        return new GetPartyMemberInfoResponse(partyMemberList);
+    }
 }
