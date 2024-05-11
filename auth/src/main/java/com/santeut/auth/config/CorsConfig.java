@@ -6,8 +6,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class CorsConfig implements WebMvcConfigurer {
 
     private final static String[] ALLOWED_ORIGINS = {
-            "http://localhost:9000",
-            "http://k10e101.p.ssafy.io"
+            "http://localhost:52711",
+            "https://k10e201.p.ssafy.io"
     };
 
     private final static String[] ALLOWED_METHODS = {

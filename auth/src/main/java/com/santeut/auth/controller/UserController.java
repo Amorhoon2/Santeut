@@ -31,7 +31,8 @@ public class UserController {
     public BasicResponse userLoginInfo(HttpServletRequest request){
 
         log.debug("UserId: "+ request.getHeader("userId"));
-        return new BasicResponse(HttpStatus.OK.value(), userService.userLoginInfo(request.getHeader("userId")));
+        String userId = request.getHeader("userId");
+        return new BasicResponse(HttpStatus.OK.value(), userService.userLoginInfo(userId));
     }
 
     @GetMapping("/{userId}")
@@ -39,6 +40,13 @@ public class UserController {
 
         log.debug("userId: "+ userId);
         return new BasicResponse(HttpStatus.OK.value(), userService.userInfo(userId));
+    }
+
+    @GetMapping("/mypage/profile")
+    public BasicResponse getMypageProfile(@AuthenticationPrincipal UserDetails userDetails){
+
+        log.debug("MyPage Profile 조회: "+ userDetails.getUsername());
+        return new BasicResponse(HttpStatus.OK.value(), userService.getMypageProfile(userDetails.getUsername()));
     }
 
     @PutMapping("/password")
@@ -52,10 +60,11 @@ public class UserController {
 
     @PatchMapping("/profile")
     public BasicResponse updateProfile(@AuthenticationPrincipal UserDetails userDetails,
-                                        @RequestBody UpdateProfileRequest request){
+                                       @RequestPart(value = "request", required = false) UpdateProfileRequest request,
+                                       @RequestPart(value = "userProfile", required = false) MultipartFile multipartFile){
 
         log.debug("Profile 수정하는 유저 ID: "+ userDetails.getUsername());
-        userService.updateProfile(userDetails.getUsername(), request);
+        userService.updateProfile(userDetails.getUsername(), request, multipartFile);
         return new BasicResponse(HttpStatus.OK.value(), "프로필 수정 성공");
     }
 
@@ -76,18 +85,18 @@ public class UserController {
     }
 
     @GetMapping("/record")
-    private BasicResponse gerRecord(@AuthenticationPrincipal UserDetails userDetails){
+    public BasicResponse gerRecord(@AuthenticationPrincipal UserDetails userDetails){
 
         log.debug("등산 기록 조회 ID: "+ userDetails.getUsername());
         return new BasicResponse(HttpStatus.OK.value(), userService.getMountainRecord(userDetails.getUsername()));
     }
 
     @PatchMapping("/record")
-    private BasicResponse patchRecord(@RequestBody HikingRecordRequest request){
+    public ResponseEntity<?> patchRecord(@RequestBody HikingRecordRequest request){
         
         log.debug("등산 기록 갱신");
         userService.patchMountainRecord(request);
-        return new BasicResponse(HttpStatus.OK.value(), "등산 기록 갱신 완료");
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "등산 기록 갱신 완료");
     }
 
     @GetMapping("/party/profile")
@@ -96,4 +105,5 @@ public class UserController {
         log.info("{}번 유저: {}번 파티 멤버 프로필 조회", request.getHeader("userId"), requestDto.partyId);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, userService.getPartyMemberInfo(requestDto));
     }
+
 }

@@ -4,6 +4,7 @@ import com.santeut.auth.common.exception.DataNotFoundException;
 import com.santeut.auth.dto.request.SignInRequestDto;
 import com.santeut.auth.dto.request.SignUpRequestDto;
 import com.santeut.auth.dto.response.JwtTokenResponseDto;
+import com.santeut.auth.dto.response.SignInResponse;
 import com.santeut.auth.entity.RefreshToken;
 import com.santeut.auth.entity.UserEntity;
 import com.santeut.auth.repository.RefreshTokenRepository;
@@ -50,11 +51,10 @@ public class AuthServiceImpl implements AuthService {
         int age = ageUtil.calculateAge(userEntity.getUserBirth());
         userEntity.setUserAge(age);
         userRepository.save(userEntity);
-
     }
 
     @Override
-    public JwtTokenResponseDto signIn(SignInRequestDto dto) {
+    public SignInResponse signIn(SignInRequestDto dto) {
 
         String userLoginId = dto.getUserLoginId();
         String userPassword = dto.getUserPassword();
@@ -63,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
         int userId = userEntity.getUserId();
+        String userNickname = userEntity.getUserNickname();
 
         if(!userLoginId.equals(userEntity.getUserLoginId())){
             throw new DataNotFoundException(ResponseCode.NOT_MATCH_USER_LOGIN_ID);
@@ -71,16 +72,14 @@ public class AuthServiceImpl implements AuthService {
             throw new DataNotFoundException(ResponseCode.NOT_MATCH_USER_PASSWORD);
         }
 
-        JwtTokenResponseDto jwtTokenResponse = jwtTokenProvider.issueToken(userId);
-
+        JwtTokenResponseDto jwtTokenResponse = jwtTokenProvider.issueToken(userId, userNickname);
 
         if(refreshTokenRepository.existsByUserId(String.valueOf(userId))){
             refreshTokenRepository.deleteByUserId(String.valueOf(userId));
         }
 
         refreshTokenRepository.save(new RefreshToken(String.valueOf(userId), jwtTokenResponse.getRefreshToken()));
-
-        return jwtTokenResponse;
+        return new SignInResponse(jwtTokenResponse, userEntity.getUserNickname());
     }
 
     @Override

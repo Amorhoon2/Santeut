@@ -97,10 +97,11 @@ public class JwtTokenProvider {
     }
 
     // 사용자의 아이디, 발급 시간, 만료 시간 고려해서 JWT 키 생성
-    private String generateToken(int userId, Long expiredTime){
+    private String generateToken(int userId, String userNickname, Long expiredTime){
 
         return Jwts.builder()
                 .subject(String.valueOf(userId))
+                .claim("userNickname", userNickname)
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + expiredTime))
                 .signWith(getKey())
@@ -108,11 +109,10 @@ public class JwtTokenProvider {
     }
 
     // 키 발급
-    public JwtTokenResponseDto issueToken(int userId){
+    public JwtTokenResponseDto issueToken(int userId, String userNickname){
 
-
-        String accessToken = generateToken(userId, accessTokenExpired);
-        String refreshToken = generateToken(userId, refreshTokenExpired);
+        String accessToken = generateToken(userId, userNickname, accessTokenExpired);
+        String refreshToken = generateToken(userId, userNickname, refreshTokenExpired);
 
         return new JwtTokenResponseDto("Bearer", accessToken, refreshToken);
     }
@@ -126,6 +126,8 @@ public class JwtTokenProvider {
         }
 
         String userId = extractUserId(token);
+        UserEntity userEntity = userRepository.findByUserId(Integer.parseInt(userId))
+                .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
         if(userId == null){
             throw new DataNotFoundException(ResponseCode.NOT_EXISTS_USER);
@@ -144,6 +146,6 @@ public class JwtTokenProvider {
             throw new DataNotFoundException(ResponseCode.NOT_MATCH_REFRESH_TOKEN);
         }
 
-        return issueToken(Integer.parseInt(userId));
+        return issueToken(Integer.parseInt(userId), userEntity.getUserNickname());
     }
 }
