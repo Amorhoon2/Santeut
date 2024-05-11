@@ -99,7 +99,7 @@ public class UserController {
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "등산 기록 갱신 완료");
     }
 
-    @GetMapping("/party/profile")
+    @PostMapping("/party/profile")
     private ResponseEntity<BasicResponse> getPartyMemberInfo(HttpServletRequest request,
         @RequestBody PartyMemberInfoRequest requestDto) {
         log.info("{}번 유저: {}번 파티 멤버 프로필 조회", request.getHeader("userId"), requestDto.partyId);
