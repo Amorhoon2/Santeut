@@ -101,7 +101,7 @@ public class UserController {
     }
 
     @PostMapping("/party/profile")
-    private ResponseEntity<BasicResponse> getPartyMemberInfo(HttpServletRequest request,
+    private ResponseEntity<BasicResponse> getPartyMemberInfo(
         @RequestBody PartyMemberInfoRequest requestDto) {
         log.info("{} 유저 프로필 조회", Arrays.toString(requestDto.userIdList.toArray()));
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, userService.getPartyMemberInfo(requestDto));
