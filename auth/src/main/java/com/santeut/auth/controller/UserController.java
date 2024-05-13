@@ -10,6 +10,7 @@ import com.santeut.auth.dto.request.UpdateProfileRequest;
 import com.santeut.auth.service.UserService;
 import jakarta.persistence.Basic;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -102,7 +103,7 @@ public class UserController {
     @PostMapping("/party/profile")
     private ResponseEntity<BasicResponse> getPartyMemberInfo(HttpServletRequest request,
         @RequestBody PartyMemberInfoRequest requestDto) {
-        log.info("{}번 유저: {}번 파티 멤버 프로필 조회", request.getHeader("userId"), requestDto.partyId);
+        log.info("{} 유저 프로필 조회", Arrays.toString(requestDto.userIdList.toArray()));
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, userService.getPartyMemberInfo(requestDto));
     }
 
