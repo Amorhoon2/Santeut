@@ -3,12 +3,14 @@ package com.santeut.auth.controller;
 import com.santeut.auth.common.response.BasicResponse;
 import com.santeut.auth.common.util.ResponseUtil;
 import com.santeut.auth.dto.request.HikingRecordRequest;
+import com.santeut.auth.dto.request.PartyMemberInfoRequest;
 import com.santeut.auth.dto.request.UpdatePasswordRequest;
 import com.santeut.auth.dto.request.UpdateProfileImageRequest;
 import com.santeut.auth.dto.request.UpdateProfileRequest;
 import com.santeut.auth.service.UserService;
 import jakarta.persistence.Basic;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -96,6 +98,13 @@ public class UserController {
         log.debug("등산 기록 갱신");
         userService.patchMountainRecord(request);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "등산 기록 갱신 완료");
+    }
+
+    @PostMapping("/party/profile")
+    private ResponseEntity<BasicResponse> getPartyMemberInfo(
+        @RequestBody PartyMemberInfoRequest requestDto) {
+        log.info("{} 유저 프로필 조회", Arrays.toString(requestDto.userIdList.toArray()));
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, userService.getPartyMemberInfo(requestDto));
     }
 
 }
