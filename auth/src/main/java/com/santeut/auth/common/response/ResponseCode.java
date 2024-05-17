@@ -18,6 +18,7 @@ public enum ResponseCode {
     NOT_MATCH_USER_PASSWORD(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "패스워드가 일치하지 않음"),
     NOT_EXISTS_USER(HttpServletResponse.SC_NOT_FOUND, "존재하지 않는 유저"),
     NOT_EXISTS_USER_LEVEL(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "존재하지 않는 등급 정보"),
+    NOT_EXISTS_UPDATE_PROFILE_INFO(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "수정할 프로필 정보가 없음"),
 
     // 토큰
     INVALID_ACCESS_TOKEN(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "유효하지 않은 Access Token"),

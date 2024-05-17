@@ -7,6 +7,7 @@ import com.santeut.auth.entity.UserEntity;
 import com.santeut.auth.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,9 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
         String token = jwtTokenProvider.getTokenFromRequest(request);
+        response.setContentType("text/html;charset=UTF-8");
 
         log.debug("token: "+ token);
         if (token == null){

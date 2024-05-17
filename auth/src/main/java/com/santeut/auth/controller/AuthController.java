@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
+import com.deepl.api.*;
 
 @Slf4j
 @RestController
@@ -27,52 +28,16 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    Translator translator;
 
     @GetMapping("/welcome")
-    public String welcome(@RequestHeader(value = "usernickname") String name,
-                          @RequestHeader(value = "userNickname") String name2,
-                          HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-            request.setCharacterEncoding("UTF-8");
-            response.setContentType("text/html;charset=UTF-8");
-            // 예외 처리
-//        request.setCharacterEncoding("UTF-8");
-//        for (Map.Entry<String, String> entry : headers.entrySet()) {
-//            System.out.println("key: " + entry.getKey() +
-//                    ", value: " + entry.getValue());
-//        }
-        log.debug("name: "+ name);
-        log.debug("name2: "+ name2);
+    public String welcome() throws DeepLException, InterruptedException {
 
-
-        // HttpServletRequest의 헤더 정보 로그
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String headerValue = request.getHeader(headerName);
-            log.debug("Request Header: " + headerName + " = " + headerValue);
-        }
-
-//         HttpServletResponse의 헤더 정보 로그
-        Collection<String> headerNamesResponse = response.getHeaderNames();
-        for (String headerName : headerNamesResponse) {
-            String headerValue = response.getHeader(headerName);
-            log.debug("Response Header: " + headerName + " = " + headerValue);
-        }
-
-        String userNickname = request.getHeader("userNickname");
-        if (userNickname != null) {
-            try {
-                userNickname = URLDecoder.decode(userNickname, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                // 디코딩 실패시 예외 처리
-                e.printStackTrace();
-            }
-        }
-        log.debug("시작");
-//        String userNickname = request.getHeader("userNickname");
-        log.debug("userNickname: "+ userNickname);
-        log.debug("userId: "+ request.getHeader("userId")+" userNickname: "+request.getHeader("userNickname"));
-        return "WELCOME";
+        String authKey = "897064a0-60a9-45ac-a0b8-2bc9e8ec0837:fx";
+        translator = new Translator(authKey);
+        String text = "Prunus cerasifera is a species of plum known by the common names cherry plum and myrobalan plum. It is native to Southeast Europe and Western Asia, and is naturalised in the British Isles and scattered locations in North America. Also naturalized in parts of SE Australia where it is considered to be a mildly invasive weed of bushland near urban centers.";
+        TextResult result = translator.translateText(text, null, "ko");
+        return result.getText();
     }
 
     @PostMapping("/signup")

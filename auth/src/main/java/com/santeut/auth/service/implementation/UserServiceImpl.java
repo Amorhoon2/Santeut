@@ -76,14 +76,19 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByUserLoginId(userLoginId)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
-        log.debug("userNickname: "+ request.getUserNickname());
-        if (!request.getUserNickname().equals(userEntity.getUserNickname())) {
+        if (request == null && multipartFile == null)  throw new DataNotFoundException(ResponseCode.NOT_EXISTS_UPDATE_PROFILE_INFO);
+
+        if (request != null && request.getUserNickname() != null) {
             boolean checkUser = userRepository.existsByUserNickname(request.getUserNickname());
+            log.debug("checkUser: "+ checkUser);
+            log.debug("userNickname: "+ request.getUserNickname());
+            log.debug("userEntity Nickname: "+ userEntity.getUserNickname());
             if (checkUser) throw new DataNotFoundException(ResponseCode.EXISTS_USER_NICKNAME);
             userEntity.setUserNickname(request.getUserNickname());
         }
+
+         if(request != null && request.getUpdatePassword() != null){
         log.debug("currentPassword: "+ request.getCurrentPassword());
-        if (request.getUpdatePassword() != null){
          if(!bCryptPasswordEncoder.matches(request.getCurrentPassword(), userEntity.getUserPassword())){
             throw new DataNotFoundException(ResponseCode.NOT_MATCH_USER_PASSWORD);
          }

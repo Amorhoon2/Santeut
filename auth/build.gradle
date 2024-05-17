@@ -59,6 +59,8 @@ dependencies {
     // S3
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.710'
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    implementation 'com.deepl.api:deepl-java:1.5.0'
 }
 
 dependencyManagement {
