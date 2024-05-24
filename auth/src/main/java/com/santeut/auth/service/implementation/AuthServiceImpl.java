@@ -92,9 +92,7 @@ public class AuthServiceImpl implements AuthService {
         if(refreshTokenRepository.existsByUserId(userLoginId)){
             refreshTokenRepository.deleteByUserId(userLoginId);
         }
-
         refreshTokenRepository.save(new RefreshToken(userLoginId,jwtTokenResponseDto.getRefreshToken()));
-
         return jwtTokenResponseDto;
     }
 }

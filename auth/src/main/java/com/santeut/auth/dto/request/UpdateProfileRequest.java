@@ -7,10 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 public class UpdateProfileRequest {
 
-    @Nullable
     String userNickname;
-    @Nullable
     String currentPassword;
-    @Nullable
     String updatePassword;
 }

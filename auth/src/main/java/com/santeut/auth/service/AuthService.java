@@ -8,9 +8,7 @@ import com.santeut.auth.dto.response.SignInResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface AuthService {
-
     void signUp(SignUpRequestDto dto);
     SignInResponse signIn(SignInRequestDto dto);
     JwtTokenResponseDto reissueToken(HttpServletRequest request);
-
 }

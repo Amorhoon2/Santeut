@@ -43,7 +43,6 @@ public class JwtTokenProvider {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
 
-
     // 토큰 유효성 검증
     public boolean validateToken(String token, UserDetails userDetails){
 
@@ -74,7 +73,7 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    // 인코딩된 BASE64 값을 디코딩 후 Jwt키 값으로 생성
+    // BASE64 값을 디코딩 후 Jwt키 값으로 생성
     private Key getKey() {
 //        String jwtSecretKey = jwtSecretKey;
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretKey));
@@ -92,11 +91,10 @@ public class JwtTokenProvider {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
-
         return null;
     }
 
-    // 사용자의 아이디, 발급 시간, 만료 시간 고려해서 JWT 키 생성
+    // 사용자 아이디, 닉네임, 발급 시간, 만료 시간 고려해서 JWT 키 생성
     private String generateToken(int userId, String userNickname, Long expiredTime){
 
         return Jwts.builder()

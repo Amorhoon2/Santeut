@@ -36,9 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8");
         String token = jwtTokenProvider.getTokenFromRequest(request);
-        response.setContentType("text/html;charset=UTF-8");
 
         log.debug("token: "+ token);
         if (token == null){
@@ -47,7 +45,6 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String userId = jwtTokenProvider.extractUserId(token);
-// && SecurityContextHolder.getContext().getAuthentication() == null
         if(userId != null){
 
             UserEntity userEntity = userRepository.findByUserId(Integer.parseInt(userId))

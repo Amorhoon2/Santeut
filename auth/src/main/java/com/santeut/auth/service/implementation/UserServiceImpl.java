@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
-
         return new GetUserInfoResponse(userEntity);
     }
 
@@ -85,15 +84,13 @@ public class UserServiceImpl implements UserService {
 
         if (request != null && request.getUserNickname() != null) {
             boolean checkUser = userRepository.existsByUserNickname(request.getUserNickname());
-            log.debug("checkUser: "+ checkUser);
-            log.debug("userNickname: "+ request.getUserNickname());
-            log.debug("userEntity Nickname: "+ userEntity.getUserNickname());
+
             if (checkUser) throw new DataNotFoundException(ResponseCode.EXISTS_USER_NICKNAME);
             userEntity.setUserNickname(request.getUserNickname());
         }
 
          if(request != null && request.getUpdatePassword() != null){
-        log.debug("currentPassword: "+ request.getCurrentPassword());
+
          if(!bCryptPasswordEncoder.matches(request.getCurrentPassword(), userEntity.getUserPassword())){
             throw new DataNotFoundException(ResponseCode.NOT_MATCH_USER_PASSWORD);
          }
@@ -117,8 +114,6 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByUserLoginId(userLoginId)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
 
-        log.debug("Profile Image: "+multipartFile);
-
         String imageUrl = imageUtil.saveImage(multipartFile);
         userEntity.setUserProfile(imageUrl);
 
@@ -132,6 +127,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_EXISTS_USER));
         int point = userEntity.getUserPoint();
         String tierName = levelUtil.getTierName(point);
+
         return new GetMypageProfileResponse(userEntity, point, tierName);
     }
 
@@ -167,9 +163,8 @@ public class UserServiceImpl implements UserService {
         userEntity.setUserDistance(userEntity.getUserDistance()+request.getDistance());
         userEntity.setUserMoveTime(userEntity.getUserMoveTime()+request.getMoveTime());
         userEntity.setUserPoint(userEntity.getUserPoint()+50);
-        log.debug("첫 등반 산: "+ request.getIsFirstMountain());
-        if (request.getIsFirstMountain()) userEntity.setUserHikingMountain(userEntity.getUserHikingMountain()+1);
 
+        if (request.getIsFirstMountain()) userEntity.setUserHikingMountain(userEntity.getUserHikingMountain()+1);
         userRepository.save(userEntity);
     }
 

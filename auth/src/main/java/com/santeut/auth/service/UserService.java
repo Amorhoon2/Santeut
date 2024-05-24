@@ -20,20 +20,13 @@ import org.springframework.web.multipart.MultipartFile;
 public interface UserService {
 
     GetUserInfoResponse userLoginInfo(String userId);
-
     GetUserInfoResponse userInfo(int userId);
-
     void updatePassword(String userLoginId, UpdatePasswordRequest request);
-
     void updateProfile(String userLoginId, UpdateProfileRequest request, MultipartFile multipartFile);
     void updateProfileImage(String userLoginId, MultipartFile multipartFile);
     GetMypageProfileResponse getMypageProfile(String userLoginId);
-
     GetUserLevelResponse getLevel(String userLoginId);
-
     GetMountainRecordResponse getMountainRecord(String userLoginId);
-
     void patchMountainRecord(HikingRecordRequest request);
-
     GetPartyMemberInfoResponse getPartyMemberInfo(PartyMemberInfoRequest requestDto);
 }

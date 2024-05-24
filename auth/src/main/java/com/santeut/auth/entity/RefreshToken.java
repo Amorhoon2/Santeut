@@ -12,5 +12,4 @@ public class RefreshToken {
     @Id
     private String userId;
     private String refreshToken;
-
 }
